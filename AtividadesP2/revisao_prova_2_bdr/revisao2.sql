@@ -1,9 +1,4 @@
--- ===================================================================
--- Arquivo: REDE_GAMES_SCHEMA.sql
--- Descrição: Script de criação e população do banco 'rede_games'.
---            Responde às questões 1-6 da Atividade Prática.
--- Fonte: BDR-Prova2-2ºSem25-ScriptBD-ProvaPrática.pdf
--- ===================================================================
+--Respostas da Revisão para Prova 2 - Banco de Dados Relacional
 
 -- Questão 1: Criação do banco de dados
 -- (Execute este comando separadamente ou crie o banco manualmente)

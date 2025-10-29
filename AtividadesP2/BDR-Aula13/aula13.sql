@@ -1,69 +1,71 @@
--- ===================================================================
--- Arquivo: exercicio_subconsultas_where_aula13.sql
--- Descrição: Resolução da Atividade Prática da Aula 13 (BDR-Aula13-141025.pdf).
---            Uso de subconsultas com IN e EXISTS na cláusula WHERE.
--- Pré-requisito: Banco "limnologia_db" criado e populado conforme
---                o script 'setup_limnologia_db.sql'.
--- ===================================================================
+-- Exercícios banco: 'limnologia_db'
 
--- (Conecte-se ao banco 'limnologia_db'. Ex: \c limnologia_db)
-
--- Passo 1: Conferir os parâmetros disponíveis
--- Executado para identificar o nome ou ID do parâmetro desejado.
+-- 1. Verificando o nome do parâmetro
+-- (Usado para confirmar que o nome é 'Oxigênio Dissolido')
 SELECT * FROM parametro;
--- (Identificamos que o parâmetro é 'Oxigênio Dissolvido')
 
 
--- Passo 2: Rodar a subconsulta isolada
--- Mostra a lista de IDs dos reservatórios que possuem medições de 'Oxigênio Dissolvido'.
-SELECT DISTINCT s.id_reservatorio -- Usamos DISTINCT para evitar IDs repetidos
+-- 2. Subconsulta isolada (para usar com IN)
+-- Lista IDs únicos de reservatórios que mediram 'Oxigênio Dissolido'.
+SELECT DISTINCT s.id_reservatorio -- DISTINCT evita IDs duplicados
 FROM series_temporais s
 INNER JOIN parametro p ON s.id_parametro = p.id_parametro
-WHERE p.nome = 'Oxigênio Dissolvido';
--- Resultado esperado (com base nos dados do setup): 1, 3, 2 (a ordem pode variar)
+WHERE p.nome = 'Oxigênio Dissolido';
 
 
--- Passo 3: Rodar a query completa com IN
--- Lista os nomes dos reservatórios cujo ID está na lista gerada pela subconsulta.
+-- 3. Consulta principal usando IN
+-- Busca nomes de reservatórios cujo ID está na lista da subconsulta anterior.
+SELECT r.nome AS reservatorio
+FROM reservatorio r
+WHERE r.id_reservatorio IN (
+    -- Início da subconsulta
+    SELECT s.id_reservatorio
+    FROM series_temporais s
+    INNER JOIN parametro p ON s.id_parametro = p.id_parametro
+    WHERE p.nome = 'Oxigênio Dissolido'
+    -- Fim da subconsulta
+);
+
+
+-- 4. Consulta principal reescrita com EXISTS
+-- Busca nomes de reservatórios onde 'EXISTE' ao menos uma medição
+-- de 'Oxigênio Dissolido'.
+SELECT r.nome AS reservatorio
+FROM reservatorio r
+WHERE EXISTS (
+    -- Início da subconsulta correlacionada
+    SELECT 1 -- 'SELECT 1' é otimizado, apenas checa a existência
+    FROM series_temporais s
+    INNER JOIN parametro p ON s.id_parametro = p.id_parametro
+    WHERE s.id_reservatorio = r.id_reservatorio -- Condição de correlação (liga à consulta principal)
+      AND p.nome = 'Oxigênio Dissolido'
+    -- Fim da subconsulta
+);
+
+
+-- 5. Opcional: Comparação de desempenho (EXPLAIN ANALYZE)
+-- (EXISTS é geralmente mais eficiente, pois para na primeira correspondência,
+--  enquanto o IN precisa avaliar a lista inteira da subconsulta).
+
+/*
+EXPLAIN ANALYZE
 SELECT r.nome AS reservatorio
 FROM reservatorio r
 WHERE r.id_reservatorio IN (
     SELECT s.id_reservatorio
     FROM series_temporais s
     INNER JOIN parametro p ON s.id_parametro = p.id_parametro
-    WHERE p.nome = 'Oxigênio Dissolvido'
+    WHERE p.nome = 'Oxigênio Dissolido'
 );
--- Resultado esperado: Jaguari, Represa Funil (os nomes correspondentes aos IDs 1, 3, 2)
 
-
--- Passo 4: Reescrever usando EXISTS
--- Lista os nomes dos reservatórios para os quais existe pelo menos uma medição
--- de 'Oxigênio Dissolvido'. A subconsulta agora é correlacionada.
+EXPLAIN ANALYZE
 SELECT r.nome AS reservatorio
 FROM reservatorio r
 WHERE EXISTS (
-    SELECT 1 -- Seleciona um valor constante, pois só importa se a linha existe
+    SELECT 1
     FROM series_temporais s
     INNER JOIN parametro p ON s.id_parametro = p.id_parametro
-    WHERE s.id_reservatorio = r.id_reservatorio -- Condição de correlação
-      AND p.nome = 'Oxigênio Dissolvido'
+    WHERE s.id_reservatorio = r.id_reservatorio
+      AND p.nome = 'Oxigênio Dissolido'
 );
--- Resultado esperado: Jaguari, Represa Funil (o mesmo resultado da consulta com IN)
-
-
--- Passo 5: Comparar desempenho (Opcional)
--- Execute as duas consultas anteriores precedidas por EXPLAIN ANALYZE
--- para ver o plano de execução e o tempo gasto pelo PostgreSQL.
-
--- EXPLAIN ANALYZE
--- SELECT r.nome AS reservatorio
--- FROM reservatorio r
--- WHERE r.id_reservatorio IN (...subconsulta com IN...);
-
--- EXPLAIN ANALYZE
--- SELECT r.nome AS reservatorio
--- FROM reservatorio r
--- WHERE EXISTS (...subconsulta com EXISTS...);
-
--- (A análise pode mostrar que EXISTS é potencialmente mais eficiente por parar
---  a busca na subconsulta assim que a primeira correspondência é encontrada).
+*/

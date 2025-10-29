@@ -1,12 +1,8 @@
--- ===================================================================
--- Arquivo: exercicios_aula11.sql
--- Descrição: Resolução da Atividade Prática da Aula 11 (BDR-Aula11.pdf).
--- ===================================================================
+-- ==============================================
+-- Exercícios do "BD Biblioteca"
 
--- (Conecte-se ao banco 'biblioteca'. Ex: \c biblioteca)
 
--- 1. Listar quantos livros cada autor publicou por editora (BD Biblioteca).
--- Retorna o nome do autor, o nome da editora e a contagem de livros.
+-- 1. Contar quantos livros cada autor publicou por editora.
 SELECT 
     a.nome AS autor, 
     e.nome AS editora, 
@@ -18,8 +14,7 @@ GROUP BY a.nome, e.nome
 ORDER BY autor, total_livros DESC;
 
 
--- 2. Listar a média de páginas dos livros por autor (BD Biblioteca).
--- Retorna o nome do autor e a média de páginas de seus livros.
+-- 2. Calcular a média de páginas dos livros por autor.
 SELECT 
     a.nome AS autor, 
     AVG(l.num_paginas) AS media_de_paginas
@@ -29,11 +24,12 @@ GROUP BY a.nome
 ORDER BY media_de_paginas DESC;
 
 
+-- ==============================================
+-- Exercícios do "limnologia_db"
+-- ==============================================
 -- (Conecte-se ao banco 'limnologia_db'. Ex: \c limnologia_db)
 
--- 3. Mostrar o total de campanhas por reservatório e instituição (limnologia_db).
--- Retorna o reservatório, a instituição e o número de campanhas que
--- aquela instituição fez naquele reservatório.
+-- 3. Contar o total de campanhas por reservatório E por instituição.
 SELECT 
     r.nome AS reservatorio, 
     i.nome AS instituicao, 
@@ -45,9 +41,7 @@ GROUP BY r.nome, i.nome
 ORDER BY reservatorio, total_campanhas DESC;
 
 
--- 4. Mostrar a média de valores de parâmetros por reservatório (limnologia_db).
--- Retorna o reservatório, o parâmetro medido e a média de valor
--- daquele parâmetro naquele reservatório.
+-- 4. Calcular a média de valores de parâmetros por reservatório.
 SELECT 
     r.nome AS reservatorio, 
     p.nome AS parametro, 
@@ -59,9 +53,8 @@ GROUP BY r.nome, p.nome
 ORDER BY reservatorio, parametro;
 
 
--- 5. Listar as instituições que coletaram em mais de um reservatório (limnologia_db).
--- Retorna as instituições e a contagem de reservatórios *distintos*
--- em que elas coletaram, filtrando apenas as que coletaram em mais de um.
+-- 5. Listar instituições que coletaram em MAIS DE UM reservatório.
+--    (Usa COUNT(DISTINCT ...) para contar reservatórios únicos por instituição).
 SELECT 
     i.nome AS instituicao, 
     COUNT(DISTINCT c.id_reservatorio) AS total_reservatorios_distintos

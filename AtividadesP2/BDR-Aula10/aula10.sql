@@ -1,14 +1,6 @@
--- ===================================================================
--- Arquivo: exercicios_aula10.sql
--- Descrição: Resolução da Atividade Prática da Aula 10 (BDR-Aula10.pdf).
--- ===================================================================
-
--- ===================================================================
 -- Exercícios do "BD Biblioteca"
--- ===================================================================
 
--- 1. Listar quantos livros cada autor possui (BD Biblioteca).
---    (Esta consulta usa o schema da biblioteca fornecido na aula).
+-- 1. Contar quantos livros cada autor possui.
 SELECT 
     a.nome AS autor, 
     COUNT(l.id_livro) AS total_livros
@@ -18,11 +10,10 @@ GROUP BY a.nome
 ORDER BY total_livros DESC;
 
 
--- 2. Mostrar a média de páginas dos livros por editora (BD Biblioteca).
+-- 2. Calcular a média de páginas dos livros por editora.
 --
---    NOTA: O schema do BD Biblioteca (pág. 5) não inclui as tabelas
---    'editora' ou a coluna 'paginas'. A consulta abaixo é uma 
---    solução hipotética, assumindo que essas colunas existiriam.
+-- NOTA: Consulta hipotética.
+-- O schema original do BD Biblioteca não incluía 'editora' ou 'paginas'.
 /*
 SELECT 
     ed.nome AS editora,
@@ -33,15 +24,13 @@ GROUP BY ed.nome;
 */
 
 
--- ===================================================================
+-- ==============================================
 -- Exercícios do "limnologia_db"
--- ===================================================================
--- NOTA: O schema completo do "limnologia_db" não foi fornecido.
--- As consultas abaixo são baseadas nos exemplos e nomes de tabelas
--- e colunas inferidos do PDF.
+-- ==============================================
+-- NOTA: O schema completo não foi fornecido.
+-- As consultas abaixo são hipotéticas, baseadas nos exemplos do PDF.
 
--- 3. Listar o total de campanhas por reservatório (limnologia_db).
---    (Esta consulta é baseada no exemplo da página 14).
+-- 3. Contar o total de campanhas por reservatório.
 SELECT 
     r.nome AS reservatorio, 
     COUNT(c.id_campanha) AS total_campanhas
@@ -51,8 +40,7 @@ GROUP BY r.nome
 ORDER BY total_campanhas DESC;
 
 
--- 4. Mostrar a média de valores de cada parâmetro em séries temporais (limnologia_db).
---    (Consulta hipotética baseada em nomes de tabelas/colunas inferidos).
+-- 4. Calcular a média de valores de cada parâmetro (em séries temporais).
 SELECT 
     p.nome AS parametro,
     AVG(st.valor) AS media_de_valor
@@ -61,8 +49,7 @@ INNER JOIN parametro p ON st.id_parametro = p.id_parametro
 GROUP BY p.nome;
 
 
--- 5. Exibir apenas as instituições que realizaram mais de 3 campanhas (limnologia_db).
---    (Consulta hipotética usando HAVING).
+-- 5. Listar instituições com MAIS DE 3 campanhas (usando HAVING).
 SELECT 
     i.nome AS instituicao,
     COUNT(c.id_campanha) AS total_campanhas
